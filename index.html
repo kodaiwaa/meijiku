@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>命軸｜三軸命式占い</title>
+<style>
+  :root {
+    --ink: #1a1814;
+    --ink-mid: #5a5650;
+    --ink-light: #9a948e;
+    --paper: #faf8f4;
+    --paper-warm: #f2ede4;
+    --paper-card: #ffffff;
+    --accent: #8b4513;
+    --accent-light: #c8845a;
+    --accent-pale: #f5ebe0;
+    --resonance: #4a6741;
+    --resonance-pale: #eaf2e8;
+    --border: rgba(90,86,80,0.15);
+    --border-mid: rgba(90,86,80,0.25);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Georgia', serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ヘッダー */
+  .header {
+    padding: 2rem 1.5rem 1.5rem;
+    border-bottom: 0.5px solid var(--border);
+    background: var(--paper);
+  }
+
+  .header-title {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--ink-light);
+    margin-bottom: 6px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  }
+
+  .header-name {
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+  }
+
+  .header-name span {
+    color: var(--accent);
+  }
+
+  /* 入力エリア */
+  .input-section {
+    padding: 1.5rem;
+    background: var(--paper);
+  }
+
+  .input-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .date-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .date-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .date-field.year { flex: 2; }
+  .date-field.month { flex: 1; }
+  .date-field.day { flex: 1; }
+
+  .date-field-label {
+    font-size: 10px;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.1em;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    height: 44px;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    background: var(--paper-card);
+    color: var(--ink);
+    font-size: 16px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    padding: 0 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  input[type="number"]:focus {
+    border-color: var(--accent-light);
+  }
+
+  .year-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .year-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .submit-btn {
+    width: 100%;
+    height: 52px;
+    background: var(--accent);
+    color: #faf8f4;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 16px;
+  }
+
+  .submit-btn:hover { opacity: 0.88; }
+  .submit-btn:active { transform: scale(0.98); }
+
+  /* 区切り */
+  .divider {
+    height: 0.5px;
+    background: var(--border);
+    margin: 0 1.5rem;
+  }
+
+  /* 結果エリア */
+  .result-section {
+    padding: 1.5rem;
+    display: none;
+  }
+
+  .result-section.visible { display: block; }
+
+  /* 命式ヘッダー */
+  .meishiki-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .meishiki-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    margin-bottom: 6px;
+  }
+
+  .meishiki-number {
+    font-size: 13px;
+    color: var(--accent-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .meishiki-title {
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  /* タグ */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1.25rem;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border: 0.5px solid var(--border-mid);
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    color: var(--ink-mid);
+    letter-spacing: 0.05em;
+    background: var(--paper-card);
+  }
+
+  .tag.resonance {
+    border-color: var(--resonance);
+    color: var(--resonance);
+    background: var(--resonance-pale);
+  }
+
+  /* サマリー */
+  .summary-text {
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--ink-mid);
+    padding: 1rem 0;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+
+  /* 詳細カード */
+  .detail-section {
+    display: none;
+  }
+
+  .detail-section.visible { display: block; }
+
+  .detail-toggle {
+    width: 100%;
+    background: none;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    color: var(--ink-mid);
+    font-size: 13px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.1em;
+    transition: background 0.15s;
+  }
+
+  .detail-toggle:hover { background: var(--paper-warm); }
+
+  .toggle-icon {
+    font-size: 16px;
+    transition: transform 0.2s;
+  }
+
+  .toggle-icon.open { transform: rotate(180deg); }
+
+  .detail-cards {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+
+  .detail-cards.visible { display: flex; }
+
+  .detail-card {
+    background: var(--paper-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+  }
+
+  .detail-card-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    margin-bottom: 4px;
+  }
+
+  .detail-card-title {
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+
+  .detail-card-body {
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--ink-mid);
+    margin-bottom: 10px;
+  }
+
+  .detail-sub {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 0.5px solid var(--border);
+  }
+
+  .detail-sub-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .detail-sub-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    min-width: 48px;
+    padding-top: 2px;
+  }
+
+  .detail-sub-text {
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink-mid);
+    flex: 1;
+  }
+
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding-top: 8px;
+  }
+
+  .keyword-chip {
+    padding: 2px 8px;
+    background: var(--accent-pale);
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--accent);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  }
+
+  .advice-box {
+    background: var(--paper-warm);
+    border-left: 2px solid var(--accent-light);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--ink-mid);
+  }
+
+  .resonance-card {
+    border-color: var(--resonance);
+  }
+
+  .resonance-card .detail-card-label {
+    color: var(--resonance);
+  }
+
+  /* リセット */
+  .reset-btn {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1rem;
+    font-size: 12px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.15em;
+    color: var(--ink-light);
+    cursor: pointer;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  .reset-btn:hover { color: var(--ink-mid); }
+
+  /* ローディング */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+    color: var(--ink-light);
+    font-size: 13px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.15em;
+  }
+
+  .loading.visible { display: block; }
+
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.2s steps(4, end) infinite;
+  }
+
+  @keyframes dots {
+    0%   { content: ''; }
+    25%  { content: '・'; }
+    50%  { content: '・・'; }
+    75%  { content: '・・・'; }
+    100% { content: ''; }
+  }
+
+  /* フェードイン */
+  .fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .header-subtitle {
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    margin-top: 4px;
+    margin-bottom: 12px;
+  }
+
+  .header-desc {
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.03em;
+  }
+
+  .copy-btn {
+    width: 100%;
+    height: 44px;
+    background: none;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.12em;
+    color: var(--ink-mid);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .copy-btn:hover { background: var(--paper-warm); }
+  .copy-btn.copied { color: var(--resonance); border-color: var(--resonance); }
+
+  .footer-note {
+    padding: 1.5rem;
+    border-top: 0.5px solid var(--border);
+    margin-top: 1rem;
+  }
+
+  .footer-note p {
+    font-size: 10px;
+    line-height: 1.7;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.05em;
+  }
+    display: none;
+    background: var(--paper-warm);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    font-size: 11px;
+    font-family: monospace;
+    color: var(--ink-mid);
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin-top: 1rem;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <p class="header-title">MEIJIKU</p>
+    <h1 class="header-name">命<span>軸</span></h1>
+    <p class="header-subtitle">三軸命式占い</p>
+    <p class="header-desc">生年月日から、あなたの本質・行動パターン・今年の流れを読みます。<br>干支と暦をベースにした、伝統と独自解釈の自己理解ツールです。</p>
+  </div>
+
+  <div class="input-section">
+    <span class="input-label">生年月日を入力してください</span>
+    <div class="date-row">
+      <div class="date-field year">
+        <span class="date-field-label">年</span>
+        <input type="number" id="year" placeholder="1990" min="1900" max="2025">
+      </div>
+      <div class="date-field month">
+        <span class="date-field-label">月</span>
+        <input type="number" id="month" placeholder="4" min="1" max="12">
+      </div>
+      <div class="date-field day">
+        <span class="date-field-label">日</span>
+        <input type="number" id="day" placeholder="15" min="1" max="31">
+      </div>
+    </div>
+
+    <div class="year-row">
+      <div class="year-field">
+        <span class="date-field-label">占う年（デフォルト：今年）</span>
+        <input type="number" id="current-year" placeholder="2026" min="1900" max="2100">
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="calculate()">命式を見る</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="loading" id="loading">
+    <span class="loading-dots">算出中</span>
+  </div>
+
+  <div class="result-section" id="result-section">
+
+    <div class="meishiki-header">
+      <p class="meishiki-label">MEISHIKI</p>
+      <p class="meishiki-number" id="meishiki-number"></p>
+      <h2 class="meishiki-title" id="meishiki-title"></h2>
+      <div class="tags" id="tags"></div>
+    </div>
+
+    <p class="summary-text" id="summary"></p>
+
+    <button class="copy-btn" id="copy-btn" onclick="copyResult()">
+      <span>結果をコピー</span>
+    </button>
+
+    <button class="detail-toggle" id="detail-toggle" onclick="toggleDetail()">
+      <span>詳しく見る</span>
+      <span class="toggle-icon" id="toggle-icon">▼</span>
+    </button>
+
+    <div class="detail-section" id="detail-section">
+      <div class="detail-cards" id="detail-cards"></div>
+    </div>
+
+    <button class="reset-btn" onclick="reset()">はじめから</button>
+
+    <div class="debug" id="debug"></div>
+  </div>
+
+  <div class="footer-note">
+    <p>この診断は、伝統暦・干支・十二運をベースにした娯楽・自己理解コンテンツです。結果は参考としてお楽しみください。</p>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// 干支・十二運データ
+// ============================================================
+const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+
+// 十二運テーブル（日干ごとの十二運、地支順）
+const JYUNITEN = {
+  '甲': ['沐浴','冠帯','建禄','帝旺','衰','病','死','墓','絶','胎','養','長生'],
+  '乙': ['病','衰','帝旺','建禄','冠帯','沐浴','長生','養','胎','絶','墓','死'],
+  '丙': ['胎','養','長生','沐浴','冠帯','建禄','帝旺','衰','病','死','墓','絶'],
+  '丁': ['絶','墓','死','病','衰','帝旺','建禄','冠帯','沐浴','長生','養','胎'],
+  '戊': ['胎','養','長生','沐浴','冠帯','建禄','帝旺','衰','病','死','墓','絶'],
+  '己': ['絶','墓','死','病','衰','帝旺','建禄','冠帯','沐浴','長生','養','胎'],
+  '庚': ['死','墓','絶','胎','養','長生','沐浴','冠帯','建禄','帝旺','衰','病'],
+  '辛': ['長生','養','胎','絶','墓','死','病','衰','帝旺','建禄','冠帯','沐浴'],
+  '壬': ['帝旺','衰','病','死','墓','絶','胎','養','長生','沐浴','冠帯','建禄'],
+  '癸': ['建禄','冠帯','沐浴','長生','養','胎','絶','墓','死','病','衰','帝旺'],
+};
+
+// 空亡テーブル（六十干支のインデックス→空亡地支ペア）
+const VOID_TABLE = {
+  0:'戌亥', 1:'戌亥', 2:'戌亥', 3:'戌亥', 4:'戌亥', 5:'戌亥',
+  6:'戌亥', 7:'戌亥', 8:'戌亥', 9:'戌亥',
+  10:'申酉', 11:'申酉', 12:'申酉', 13:'申酉', 14:'申酉', 15:'申酉',
+  16:'申酉', 17:'申酉', 18:'申酉', 19:'申酉',
+  20:'午未', 21:'午未', 22:'午未', 23:'午未', 24:'午未', 25:'午未',
+  26:'午未', 27:'午未', 28:'午未', 29:'午未',
+  30:'辰巳', 31:'辰巳', 32:'辰巳', 33:'辰巳', 34:'辰巳', 35:'辰巳',
+  36:'辰巳', 37:'辰巳', 38:'辰巳', 39:'辰巳',
+  40:'寅卯', 41:'寅卯', 42:'寅卯', 43:'寅卯', 44:'寅卯', 45:'寅卯',
+  46:'寅卯', 47:'寅卯', 48:'寅卯', 49:'寅卯',
+  50:'子丑', 51:'子丑', 52:'子丑', 53:'子丑', 54:'子丑', 55:'子丑',
+  56:'子丑', 57:'子丑', 58:'子丑', 59:'子丑',
+};
+
+// 空亡→周期キー
+const VOID_TO_CYCLE = {
+  '戌亥':'earth', '申酉':'metal', '午未':'flame',
+  '辰巳':'sky',   '寅卯':'tree',  '子丑':'sea',
+};
+
+// 周期停止支（各周期タイプが「停止」になる年支）
+const CYCLE_STOP_BRANCH = {
+  'earth': '戌', 'metal': '申', 'flame': '午',
+  'sky': '辰',   'tree': '寅',  'sea': '子',
+};
+
+// 運気ステージ順（停止から逆順で12サイクル）
+const FORTUNE_STAGES = ['停止','減退','種子','緑生','立花','健弱','達成','乱気','再会','財成','安定','陰影'];
+const FORTUNE_KEYS   = ['pause','release','seed','sprout','bloom','fluctuate','harvest','turbulence','reunion','accumulate','flow','inner'];
+
+// ============================================================
+// 計算ロジック
+// ============================================================
+
+function calcJulianDay(y, m, d) {
+  if (m <= 2) { y -= 1; m += 12; }
+  const A = Math.floor(y / 100);
+  const B = 2 - A + Math.floor(A / 4);
+  return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524;
+}
+
+function calcDayPillar(year, month, day) {
+  const jd = calcJulianDay(year, month, day);
+  const idx = ((jd + 49) % 60 + 60) % 60;
+  return {
+    index: idx,
+    stem: STEMS[idx % 10],
+    branch: BRANCHES[idx % 12],
+    kanshi: STEMS[idx % 10] + BRANCHES[idx % 12],
+  };
+}
+
+const LICHUN_DATES = {
+  1900:[2,4],1901:[2,4],1902:[2,4],1903:[2,4],1904:[2,5],
+  1905:[2,4],1906:[2,4],1907:[2,4],1908:[2,5],1909:[2,4],
+  1910:[2,4],1911:[2,4],1912:[2,5],1913:[2,4],1914:[2,4],
+  1915:[2,4],1916:[2,5],1917:[2,4],1918:[2,4],1919:[2,4],
+  1920:[2,5],1921:[2,4],1922:[2,4],1923:[2,4],1924:[2,5],
+  1925:[2,4],1926:[2,4],1927:[2,4],1928:[2,5],1929:[2,4],
+  1930:[2,4],1931:[2,4],1932:[2,5],1933:[2,4],1934:[2,4],
+  1935:[2,4],1936:[2,5],1937:[2,4],1938:[2,4],1939:[2,4],
+  1940:[2,5],1941:[2,4],1942:[2,4],1943:[2,4],1944:[2,5],
+  1945:[2,4],1946:[2,4],1947:[2,4],1948:[2,5],1949:[2,4],
+  1950:[2,4],1951:[2,4],1952:[2,5],1953:[2,4],1954:[2,4],
+  1955:[2,4],1956:[2,5],1957:[2,4],1958:[2,4],1959:[2,4],
+  1960:[2,5],1961:[2,4],1962:[2,4],1963:[2,4],1964:[2,5],
+  1965:[2,4],1966:[2,4],1967:[2,4],1968:[2,5],1969:[2,4],
+  1970:[2,4],1971:[2,4],1972:[2,5],1973:[2,4],1974:[2,4],
+  1975:[2,4],1976:[2,5],1977:[2,4],1978:[2,4],1979:[2,4],
+  1980:[2,5],1981:[2,4],1982:[2,4],1983:[2,4],1984:[2,4],
+  1985:[2,4],1986:[2,4],1987:[2,4],1988:[2,4],1989:[2,4],
+  1990:[2,4],1991:[2,4],1992:[2,4],1993:[2,4],1994:[2,4],
+  1995:[2,4],1996:[2,4],1997:[2,4],1998:[2,4],1999:[2,4],
+  2000:[2,4],2001:[2,4],2002:[2,4],2003:[2,4],2004:[2,4],
+  2005:[2,4],2006:[2,4],2007:[2,4],2008:[2,4],2009:[2,4],
+  2010:[2,4],2011:[2,4],2012:[2,4],2013:[2,4],2014:[2,4],
+  2015:[2,4],2016:[2,4],2017:[2,4],2018:[2,4],2019:[2,4],
+  2020:[2,4],2021:[2,3],2022:[2,4],2023:[2,4],2024:[2,4],
+  2025:[2,3],2026:[2,4],2027:[2,4],2028:[2,4],2029:[2,3],
+  2030:[2,4],
+};
+
+function adjustedBirthYear(year, month, day) {
+  const [lm, ld] = LICHUN_DATES[year] || [2, 4];
+  if (month < lm || (month === lm && day < ld)) return year - 1;
+  return year;
+}
+
+function calcCycle(dayPillarIdx, birthYear, birthMonth, birthDay) {
+  const adjYear = adjustedBirthYear(birthYear, birthMonth, birthDay);
+  const voidStr = VOID_TABLE[dayPillarIdx];
+  const cycleKey = VOID_TO_CYCLE[voidStr];
+
+  // 陰陽：生年の年支（立春補正後）
+  const yearBranchIdx = ((adjYear - 4) % 12 + 12) % 12;
+  const yearBranch = BRANCHES[yearBranchIdx];
+  // 子寅辰午申戌 → 陽（インデックス偶数）
+  const isYang = yearBranchIdx % 2 === 0;
+  const polarityKey = isYang ? 'yang' : 'yin';
+  const polarityLabel = isYang ? '陽' : '陰';
+
+  // 共鳴型：生年の年支が空亡に含まれるか
+  const isResonance = voidStr.includes(yearBranch);
+
+  return { cycleKey, voidStr, yearBranch, polarityKey, polarityLabel, isResonance };
+}
+
+function calcFortuneStage(cycle, currentYear) {
+  const stopBranch = cycle.polarityKey === 'yang'
+    ? cycle.voidStr[0]
+    : cycle.voidStr[1];
+  const stopIdx = BRANCHES.indexOf(stopBranch);
+  const currentBranchIdx = ((currentYear - 4) % 12 + 12) % 12;
+  const diff = ((currentBranchIdx - stopIdx) + 12) % 12;
+  return { stageLabel: FORTUNE_STAGES[diff], stageKey: FORTUNE_KEYS[diff] };
+}
+
+function calcActionStyle(stem, branch) {
+  const branchIdx = BRANCHES.indexOf(branch);
+  return JYUNITEN[stem][branchIdx];
+}
+
+// ============================================================
+// 説明文データ（簡略版：フロントエンド組み込み）
+// reading_parts.json / pillar_overrides.json から移植
+// ============================================================
+
+const PARTS = {
+  stems: {
+    '甲': { core_trait:'まっすぐ上へ伸びる意志を持ちます。目標を定めたら、ぶれずに進み続けます。', strength:'開拓力と信念の強さ。誰も踏み入れていない道を切り開くエネルギーがあります。', shadow:'信念が強いぶん、方向転換に時間がかかることがあります。', keyword:'開拓' },
+    '乙': { core_trait:'風に揺れながらも根を手放さない草のように、しなやかに環境に適応します。', strength:'柔軟な対応力と観察眼。場の空気を読みながら、自分のペースを保てます。', shadow:'周囲に合わせすぎて、自分の意志が見えにくくなることがあります。', keyword:'適応' },
+    '丙': { core_trait:'太陽のように周囲を照らし、その場の空気を明るく変えます。存在感は自然と伝わります。', strength:'行動力と発信力。熱量がそのまま人を動かす力になります。', shadow:'燃えるほど集中するぶん、一度冷めると再点火に時間がかかることがあります。', keyword:'照射' },
+    '丁': { core_trait:'揺れながらも消えない灯火のように、静かな熱を持続させます。深さを大切にします。', strength:'持続する集中力と洞察力。表面ではなく本質を見ようとします。', shadow:'内側に抱えすぎて、感情や考えを外に出すのが遅くなることがあります。', keyword:'灯火' },
+    '戊': { core_trait:'大地のように構えが広く、周囲の重さを受け止める包容力があります。', strength:'安定感と忍耐力。長期的な視点で物事を支え続けられます。', shadow:'慎重さが出るぶん、変化への一歩が重くなることがあります。', keyword:'包容' },
+    '己': { core_trait:'耕された土のように、関わるものをゆっくり育てます。表立たないところで場を整えます。', strength:'細やかな気配りと調整力。全体のバランスを整える力があります。', shadow:'気を配りすぎて、自分の優先事項が後回しになりやすいです。', keyword:'調整' },
+    '庚': { core_trait:'鉱石のように硬質な意志と、磨かれることで光る潜在力を持ちます。', strength:'決断力と実行力。曖昧さを嫌い、筋を通すことを大切にします。', shadow:'正しさへのこだわりが強いぶん、妥協点を見つけるのに時間がかかることがあります。', keyword:'研磨' },
+    '辛': { core_trait:'磨き上げられた刃のように、精緻さと鋭さを兼ね備えます。細部への目が利きます。', strength:'分析力と完成度へのこだわり。質を高め続ける姿勢があります。', shadow:'基準が高いぶん、自分にも他者にも厳しくなりすぎることがあります。', keyword:'精緻' },
+    '壬': { core_trait:'大河のように、広い視野と流れを読む力を持ちます。全体像から動く傾向があります。', strength:'発想力と構想力。点と点をつなぎ、大きな流れを作り出せます。', shadow:'スケールが大きいぶん、細部や目の前のことが抜けやすくなることがあります。', keyword:'構想' },
+    '癸': { core_trait:'地中に染み込む雨のように、静かに深く浸透します。表からは見えない力を蓄えています。', strength:'直感力と感受性。言葉にならない情報を受け取る繊細さがあります。', shadow:'感じすぎるぶん、外部の影響を受けて消耗しやすいことがあります。', keyword:'浸透' },
+  },
+  branches: {
+    '子': { core_trait:'表には出ないエネルギーを内側に蓄えています。静かなほど力があります。', energy:'内向き・蓄積', keyword:'潜流' },
+    '丑': { core_trait:'時間をかけて確実に形を作ります。急がないことが強さになります。', energy:'持続・定着', keyword:'定着' },
+    '寅': { core_trait:'行動の初速が速く、勢いで流れを作ります。', energy:'前向き・突破', keyword:'突破' },
+    '卯': { core_trait:'柔らかく自然に広がります。押すより引く力が得意です。', energy:'拡散・浸透', keyword:'芽吹' },
+    '辰': { core_trait:'大きなエネルギーを内包しています。変化の節目に力を発揮します。', energy:'変容・蓄勢', keyword:'変容' },
+    '巳': { core_trait:'変化を通じて本質に近づきます。観察と洞察を好みます。', energy:'内省・変化', keyword:'洞察' },
+    '午': { core_trait:'エネルギーが外に向かって全開になります。場の中心になりやすいです。', energy:'発散・表現', keyword:'全開' },
+    '未': { core_trait:'豊かさと疲れが同居します。内と外のバランスを整えながら動きます。', energy:'調和・充実', keyword:'充実' },
+    '申': { core_trait:'知恵と機転で局面を打開します。状況への対応が素早いです。', energy:'機動・応用', keyword:'機転' },
+    '酉': { core_trait:'積み上げたものを形にする収束力があります。完成度を大切にします。', energy:'収束・完成', keyword:'収穫' },
+    '戌': { core_trait:'守るべきものへの忠実さを持ちます。信頼を築くのに時間をかけます。', energy:'守護・信頼', keyword:'守護' },
+    '亥': { core_trait:'次の動きへのエネルギーを内側に満たしています。', energy:'内蓄・準備', keyword:'内蓄' },
+  },
+  action_styles: {
+    '長生': { modifier_word:'育成型', action_tendency:'土台を作ることから始めます。焦らず積み上げる姿勢が、長期的な信頼につながります。', decision_style:'根拠を確かめてから動きます。直感より確認を優先しやすいです。', interpersonal:'信頼を時間をかけて築きます。深くなると長く続きます。', energy_curve:'ゆっくり上昇' },
+    '沐浴': { modifier_word:'模索型', action_tendency:'試行錯誤を繰り返しながら、自分のやり方を見つけていきます。', decision_style:'迷いながら決めることが多いです。複数の選択肢を同時に持ちやすいです。', interpersonal:'関わる相手によって色が変わることがあります。', energy_curve:'波がある' },
+    '冠帯': { modifier_word:'準備型', action_tendency:'本番に向けて整えることが得意です。段取りと準備に力を注ぎます。', decision_style:'見通しが立ってから動きます。計画が固まると行動が早くなります。', interpersonal:'礼儀と形式を大切にします。', energy_curve:'助走期' },
+    '建禄': { modifier_word:'実務型', action_tendency:'実績と経験を着実に積みます。地道な積み重ねの中に安心を見つけます。', decision_style:'過去の経験をベースに判断します。', interpersonal:'頼りにされる存在になりやすいです。', energy_curve:'安定上昇' },
+    '帝旺': { modifier_word:'全開型', action_tendency:'エネルギーが頂点に達しています。全力で動き、結果を出すことへの意欲が強いです。', decision_style:'直感と自信で動きます。考えるより先に体が動くことがあります。', interpersonal:'自然とリーダー的な立場になりやすいです。', energy_curve:'頂点・全発揮' },
+    '衰':  { modifier_word:'内省型', action_tendency:'外に向かうより、内側を整えることに力を使います。', decision_style:'焦らず時間をかけて判断します。', interpersonal:'深い関係を少数と築くことを好みます。', energy_curve:'緩やかに落ち着く' },
+    '病':  { modifier_word:'感受型', action_tendency:'周囲の空気や変化を敏感に感じ取ります。細やかな気づきが行動の起点になります。', decision_style:'感覚や雰囲気を重視します。', interpersonal:'共感力が高く、相手の気持ちに寄り添うのが得意です。', energy_curve:'繊細・揺れやすい' },
+    '死':  { modifier_word:'転換型', action_tendency:'区切りをつけて次に進む力があります。手放すことで新しい流れを作ります。', decision_style:'必要なら過去のやり方を捨てて切り替えられます。', interpersonal:'関係性の節目に敏感です。', energy_curve:'一区切り・リセット' },
+    '墓':  { modifier_word:'蓄積型', action_tendency:'表には出さずに内側に蓄えます。じっくり熟成させたものが、やがて大きな力になります。', decision_style:'時間をかけて深く考えます。', interpersonal:'感情を外に出すのがゆっくりです。', energy_curve:'深く蓄える' },
+    '絶':  { modifier_word:'再生型', action_tendency:'一度ゼロになることを恐れません。リセット後の再スタートに強さが出ます。', decision_style:'既存の枠にとらわれない判断ができます。', interpersonal:'独自の価値観を持ちます。', energy_curve:'断絶から再生' },
+    '胎':  { modifier_word:'潜在型', action_tendency:'まだ形になっていない可能性を内包しています。時期が来ると一気に開花しやすいです。', decision_style:'直感で動くことが多いです。', interpersonal:'純粋な好奇心で人に近づきます。', energy_curve:'潜在・準備中' },
+    '養':  { modifier_word:'受容型', action_tendency:'環境や人から吸収しながら育ちます。学びと成長への意欲が自然と行動を動かします。', decision_style:'周囲の意見を参考にしながら決めます。', interpersonal:'素直さと柔軟さで人に好かれやすいです。', energy_curve:'吸収・緩やかな成長' },
+  },
+  cycles: {
+    tree:  { display:'樹',   essence:'時間をかけて深く根を張り、着実に高みへ伸びる力', yang:{ expression:'外に向かって枝を広げるように、人や環境を巻き込みながら成長します。', tendency:'積極的・拡張志向' }, yin:{ expression:'内側に向かって根を深めるように、静かな持久力で場を支えます。', tendency:'内省的・深化志向' } },
+    flame: { display:'炎',   essence:'熱量と表現力で周囲を動かす、明るく強いエネルギー', yang:{ expression:'大きく燃え上がるように、場の空気を変えるエネルギーを持ちます。', tendency:'発信・行動・場の中心' }, yin:{ expression:'消えない灯火のように、静かな熱を長く保ちます。', tendency:'持続・内向きの情熱' } },
+    earth: { display:'大地', essence:'揺るがない安定感と、あらゆるものを受け止める包容力', yang:{ expression:'広い大地のように、多くの人やものごとを受け入れながら動きます。', tendency:'包容・安定・現実的' }, yin:{ expression:'深く耕された土のように、時間をかけて内側から豊かさを育てます。', tendency:'内側の充実・静かな存在感' } },
+    sky:   { display:'宙',   essence:'既存の枠にとらわれない自由な発想と、変化を恐れない柔軟性', yang:{ expression:'広い空を飛ぶように、境界を越えて新しい領域を切り開きます。', tendency:'自由・越境・独創' }, yin:{ expression:'夜空のように、深い静けさの中に無数の可能性を内包します。', tendency:'直感・内的自由・独自世界' } },
+    sea:   { display:'海',   essence:'深い感受性と、流れを読む広い視野', yang:{ expression:'波が岸に打ち寄せるように、感じたことを外に向けて表現します。', tendency:'感性・表現・共鳴' }, yin:{ expression:'深海のように、言葉にならない感覚を内側に蓄えます。', tendency:'内省・静かな洞察' } },
+    metal: { display:'鉱',   essence:'磨かれることで光る意志の強さと、本質を見抜く鋭さ', yang:{ expression:'鉱石が光を反射するように、持っている力を外に向けてはっきり示します。', tendency:'明確・実行・決断' }, yin:{ expression:'刃を内側に研ぐように、精緻さと完成度を静かに追い求めます。', tendency:'分析・洗練・内的基準' } },
+  },
+  fortune_stages: {
+    pause:      { display_label:'休眠',  meaning:'動かないことに意味がある時期です。表面的には止まって見えても、内側では次の準備が進んでいます。', advice:'無理に動かなくて大丈夫です。休むことも、流れの一部です。' },
+    release:    { display_label:'手放し', meaning:'執着を解いていく時期です。うまくいかないことは、手放すサインかもしれません。', advice:'終わらせることで、次が始まります。今サイクルの締めくくりを、丁寧に行ってください。' },
+    seed:       { display_label:'眠芽',  meaning:'可能性が内側に宿っている時期です。次の動きへのエネルギーが静かに蓄えられています。', advice:'焦って動かなくてよい時期です。内側を整えることが、やがて大きな芽吹きにつながります。' },
+    sprout:     { display_label:'萌動',  meaning:'何かが動き始める気配を感じます。小さな変化やサインを見逃さないようにする時期です。', advice:'大きく動くより、小さな一歩を丁寧に踏み出してください。流れはすでに始まっています。' },
+    bloom:      { display_label:'開花',  meaning:'これまでの積み重ねが表に現れてくる時期です。行動したことが形になりやすくなります。', advice:'発信や行動のタイミングとして良い時期です。準備してきたことを、臆せず外に出してみてください。' },
+    fluctuate:  { display_label:'揺らぎ', meaning:'安定と不安定が交互に来る時期です。調子の波が出やすく、判断が定まりにくいことがあります。', advice:'無理に決めようとしなくて大丈夫です。体と気持ちを整えることを優先してください。' },
+    harvest:    { display_label:'結実',  meaning:'努力が形になる時期です。積み上げてきたことへの手応えを感じやすいです。', advice:'結果を素直に受け取ってください。ここでの経験が、次のサイクルの土台になります。' },
+    turbulence: { display_label:'嵐中',  meaning:'外からの変化や混乱が多くなりやすい時期です。想定外のことが次への転換点になります。', advice:'抵抗するより、流れに乗りながら対応するほうが消耗しにくいです。' },
+    reunion:    { display_label:'再起',  meaning:'流れが戻ってくる感覚のある時期です。止まっていたことが動き始めることがあります。', advice:'過去のつながりを大切にしてみてください。予期しない再会が新しい展開につながることがあります。' },
+    accumulate: { display_label:'充填',  meaning:'物事が蓄積され、充実していく時期です。目に見えないところで力が積み重なっています。', advice:'今の積み重ねは必ず後で活きます。焦らず、地道に続けることに意味がある時期です。' },
+    flow:       { display_label:'静流',  meaning:'穏やかで安定した流れの時期です。日常の中に心地よいリズムを見つけやすいです。', advice:'特別なことをしなくてよい時期です。今あるものを丁寧に維持することが次の跳躍の準備になります。' },
+    inner:      { display_label:'内省',  meaning:'外より内を見る時期です。自分自身を深く理解することに向いています。', advice:'立ち止まることを恐れないでください。内側を整えた分だけ、次に動き出すときの力が変わります。' },
+  },
+};
+
+const PILLAR_OVERRIDES = {
+  '甲子': { title:'潜流の開拓者', core_trait:'六十干支の始まりに立つ干支です。表には静けさがありながら、内側に次の時代を切り開く意志を秘めています。', strength:'誰も踏み入れていない領域へ向かう勇気と、深い根から生まれる持久力を持ちます。', shadow:'先を急ぐ意志と蓄えたいエネルギーが引っ張り合い、方向が定まりにくくなることがあります。', keywords:['開拓','潜流','始まり'] },
+  '乙卯': { title:'春風の適応者', core_trait:'木の気が重なり、柔らかさの中に強い生命力があります。風に揺れながら、しなやかに広がっていきます。', strength:'環境に自然に溶け込みながら、気づけば場に根を張っている浸透力があります。', shadow:'周囲への適応が自然すぎるぶん、自分の輪郭が見えにくくなることがあります。', keywords:['芽吹','適応','浸透'] },
+  '丙午': { title:'真夏の発信者', core_trait:'火の気が重なり、エネルギーが最大限に外へ向かいます。存在感と熱量が自然と場を動かします。', strength:'誰よりも早く行動し、周囲を照らす発信力があります。', shadow:'燃え続けることへの疲れが出やすく、急に冷める局面があります。', keywords:['照射','全開','発信'] },
+  '丁巳': { title:'洞察の灯火', core_trait:'静かに燃える炎と深い洞察が重なります。表面より本質を見ようとする、内向きの鋭さがあります。', strength:'言葉にならない情報を感じ取り、核心に近づく力があります。', shadow:'深く感じるぶん、一人で抱えすぎることがあります。', keywords:['洞察','静熱','内省'] },
+  '戊辰': { title:'変容を抱く大地', core_trait:'安定した大地の中に、嵐の前のエネルギーが宿っています。変化の節目で本来の力が現れます。', strength:'動じない構えと、変化に対応する底力を同時に持ちます。', shadow:'安定を好むぶん、変化の必要性に気づくのが遅れることがあります。', keywords:['包容','変容','底力'] },
+  '戊午': { title:'熱を宿す大地', core_trait:'大地の包容力と真夏の熱量が重なります。動じない安定感の中に、強いエネルギーを秘めています。', strength:'人を受け止める力と、場を動かす熱量を同時に持ちます。', shadow:'エネルギーが内外に向かいやすく、消耗に気づかず動き続けることがあります。', keywords:['包容','熱量','安定'] },
+  '己丑': { title:'深耕の育て手', core_trait:'土性が重なり、じっくり時間をかけて育てる力が強くなります。表立たないところで場を整え続けます。', strength:'根気と細やかさで、長期的な蓄積を作ります。', shadow:'他者への配慮が先になりすぎて、自分の歩みが後回しになりやすいです。', keywords:['調整','定着','育成'] },
+  '庚申': { title:'機動する決断者', core_trait:'金の意志の強さと、機転の利く行動力が重なります。決めたら迷わず動く鋭い実行力があります。', strength:'状況を素早く読み、即断即行できます。', shadow:'速度が出るぶん、立ち止まって考える時間が短くなることがあります。', keywords:['決断','機転','実行'] },
+  '庚子': { title:'硬質な知性', core_trait:'鉱石の硬さと深い水の知性が交わります。感じながら考え、考えながら動く複層的な力があります。', strength:'論理と直感を両方使えます。構造を見抜く力があります。', shadow:'硬さと柔らかさが内側でぶつかり、判断に時間がかかることがあります。', keywords:['研磨','潜流','知性'] },
+  '辛酉': { title:'完成を求める職人', core_trait:'金性が重なり、精緻さへのこだわりが際立ちます。形にするまで手を抜かない意志があります。', strength:'細部への目と、仕上げる力が突出しています。', shadow:'基準が高いぶん、完成の判断が遅れたり消耗することがあります。', keywords:['精緻','収穫','完成'] },
+  '壬申': { title:'流れを読む知将', core_trait:'大河の構想力と山上の機転が重なります。全体像を見ながら、局面ごとに最適な動きを選べます。', strength:'広い視野と素早い応用力を同時に持ちます。', shadow:'スケールが大きくなりやすいぶん、細部や目の前の積み重ねが抜けることがあります。', keywords:['構想','機転','流想'] },
+  '壬午': { title:'対流する創造者', core_trait:'水と火という対極の力が内側で交わります。論理と感情、冷静さと熱量が同居する複雑な個性があります。', strength:'相反するエネルギーを使いこなせると、独自の創造力になります。', shadow:'内側の対流が激しいとき、外から見ると方向感が読みにくくなることがあります。', keywords:['構想','全開','創造'] },
+  '癸亥': { title:'深層の感知者', core_trait:'水性が重なり、感受性と深層への感知力が際立ちます。言葉にならないものを受け取る力が強いです。', strength:'直感と内省が深く、本質に近いところで物事を感じ取ります。', shadow:'感じすぎるぶん、外部の影響を受けて消耗しやすいです。', keywords:['浸透','内蓄','感知'] },
+  '丁卯': { title:'繊細な表現者', core_trait:'灯火のような静かな熱と、春の芽吹きの柔らかさが重なります。繊細な感性が言葉や表現に滲み出ます。', strength:'深く感じ取ったことを、自分なりの形で外に出す力があります。', shadow:'感じる力が強いぶん、外からの影響を受けて揺れやすいことがあります。', keywords:['静熱','芽吹','表現'] },
+  '戊申': { title:'地に足ついた機動者', core_trait:'大地の安定感と山上を渡る機転が重なります。どっしり構えながらも、状況に応じて素早く動けます。', strength:'安心感を与えながら、変化にも対応できます。', shadow:'安定を保ちながら動こうとするぶん、大きな方向転換には時間がかかることがあります。', keywords:['包容','機転','安定'] },
+};
+
+// ============================================================
+// 説明文生成
+// ============================================================
+
+function generateReading(dayPillar, actionStyle, cycleKey, polarityKey, fortuneKey, isResonance) {
+  const { kanshi, stem, branch } = dayPillar;
+  const override = PILLAR_OVERRIDES[kanshi];
+  const stemData = PARTS.stems[stem];
+  const branchData = PARTS.branches[branch];
+  const actionData = PARTS.action_styles[actionStyle];
+  const cycleData = PARTS.cycles[cycleKey];
+  const fortuneData = PARTS.fortune_stages[fortuneKey];
+
+  // タイトル
+  const title = override ? override.title : `${stem}${branch}の命式`;
+
+  // 本質
+  const essenceTrait = override ? override.core_trait : `${stemData.core_trait} ${branchData.core_trait}`;
+  const essenceStrength = override ? override.strength : stemData.strength;
+  const essenceShadow = override ? override.shadow : stemData.shadow;
+  const essenceKeywords = override ? override.keywords : [stemData.keyword, branchData.keyword];
+
+  // サマリー
+  const cycleDisplay = cycleData.display + (polarityKey === 'yang' ? '陽' : '陰');
+  const summary = `命式${kanshi}、${actionData.modifier_word}。${cycleDisplay}の周期を持ち、今年は${fortuneData.display_label}の時期にあります。${essenceTrait}`;
+
+  return {
+    title,
+    summary,
+    essence: { trait: essenceTrait, strength: essenceStrength, shadow: essenceShadow, keywords: essenceKeywords },
+    action: actionData,
+    cycle: { ...cycleData, polarityKey },
+    fortune: fortuneData,
+    isResonance,
+  };
+}
+
+// ============================================================
+// UI処理
+// ============================================================
+
+function calculate() {
+  const year = parseInt(document.getElementById('year').value);
+  const month = parseInt(document.getElementById('month').value);
+  const day = parseInt(document.getElementById('day').value);
+  const currentYear = parseInt(document.getElementById('current-year').value) || new Date().getFullYear();
+
+  if (!year || !month || !day || year < 1900 || year > 2025 || month < 1 || month > 12 || day < 1 || day > 31) {
+    alert('生年月日を正しく入力してください。');
+    return;
+  }
+
+  document.getElementById('loading').classList.add('visible');
+  document.getElementById('result-section').classList.remove('visible');
+
+  setTimeout(() => {
+    const dp = calcDayPillar(year, month, day);
+    const { cycleKey, polarityKey, polarityLabel, isResonance, voidStr } = calcCycle(dp.index, year, month, day);
+    const cycle = { cycleKey, polarityKey, voidStr };
+    const { stageLabel, stageKey } = calcFortuneStage(cycle, currentYear);
+    const actionStyle = calcActionStyle(dp.stem, dp.branch);
+    const reading = generateReading(dp, actionStyle, cycleKey, polarityKey, stageKey, isResonance);
+
+    renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYear);
+    document.getElementById('loading').classList.remove('visible');
+    document.getElementById('result-section').classList.add('visible');
+    document.getElementById('result-section').classList.add('fade-in');
+  }, 600);
+}
+
+function renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYear) {
+  const cycleData = PARTS.cycles[cycleKey];
+  const fortuneData = PARTS.fortune_stages[stageKey];
+
+  // ヘッダー
+  document.getElementById('meishiki-number').textContent = `命式 No.${dp.index + 1}　${dp.kanshi}`;
+  document.getElementById('meishiki-title').textContent = reading.title;
+
+  // タグ
+  const tagsEl = document.getElementById('tags');
+  const tagList = [
+    reading.action.modifier_word,
+    cycleData.display + polarityLabel,
+    fortuneData.display_label,
+  ];
+  tagsEl.innerHTML = tagList.map(t => `<span class="tag">${t}</span>`).join('') +
+    (reading.isResonance ? `<span class="tag resonance">共鳴型</span>` : '');
+
+  // サマリー
+  document.getElementById('summary').textContent = reading.summary;
+
+  // コピー用データ保持
+  _copyData = {
+    title: reading.title,
+    no: dp.index + 1,
+    kanshi: dp.kanshi,
+    actionWord: reading.action.modifier_word,
+    cycleLabel: cycleData.display + polarityLabel,
+    fortuneLabel: fortuneData.display_label,
+    isResonance: reading.isResonance,
+  };
+
+  // 詳細カード
+  const cards = document.getElementById('detail-cards');
+  const polDir = reading.cycle.polarityKey === 'yang' ? reading.cycle.yang : reading.cycle.yin;
+
+  cards.innerHTML = `
+    <div class="detail-card">
+      <p class="detail-card-label">ESSENCE ／ 本質</p>
+      <h3 class="detail-card-title">${reading.title}</h3>
+      <p class="detail-card-body">${reading.essence.trait}</p>
+      <div class="detail-sub">
+        <div class="detail-sub-row">
+          <span class="detail-sub-label">強み</span>
+          <span class="detail-sub-text">${reading.essence.strength}</span>
+        </div>
+        <div class="detail-sub-row">
+          <span class="detail-sub-label">整えどころ</span>
+          <span class="detail-sub-text">${reading.essence.shadow}</span>
+        </div>
+      </div>
+      <div class="keywords">${reading.essence.keywords.map(k => `<span class="keyword-chip">${k}</span>`).join('')}</div>
+    </div>
+
+    <div class="detail-card">
+      <p class="detail-card-label">ACTION ／ 行動スタイル</p>
+      <h3 class="detail-card-title">${reading.action.modifier_word}</h3>
+      <p class="detail-card-body">${reading.action.action_tendency}</p>
+      <div class="detail-sub">
+        <div class="detail-sub-row">
+          <span class="detail-sub-label">判断</span>
+          <span class="detail-sub-text">${reading.action.decision_style}</span>
+        </div>
+        <div class="detail-sub-row">
+          <span class="detail-sub-label">対人</span>
+          <span class="detail-sub-text">${reading.action.interpersonal}</span>
+        </div>
+        <div class="detail-sub-row">
+          <span class="detail-sub-label">エネルギー</span>
+          <span class="detail-sub-text">${reading.action.energy_curve}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <p class="detail-card-label">CYCLE ／ 周期タイプ</p>
+      <h3 class="detail-card-title">${cycleData.display}${polarityLabel}</h3>
+      <p class="detail-card-body">${cycleData.essence}</p>
+      <div class="detail-sub">
+        <div class="detail-sub-row">
+          <span class="detail-sub-label">傾向</span>
+          <span class="detail-sub-text">${polDir.tendency}</span>
+        </div>
+        <div class="detail-sub-row">
+          <span class="detail-sub-label">表れ方</span>
+          <span class="detail-sub-text">${polDir.expression}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <p class="detail-card-label">YEAR FORTUNE ／ ${currentYear}年の流れ</p>
+      <h3 class="detail-card-title">${fortuneData.display_label}</h3>
+      <p class="detail-card-body">${fortuneData.meaning}</p>
+      <div class="advice-box">${fortuneData.advice}</div>
+    </div>
+
+    ${reading.isResonance ? `
+    <div class="detail-card resonance-card">
+      <p class="detail-card-label">RESONANCE ／ 共鳴型</p>
+      <h3 class="detail-card-title">内面にもう一つの反応軸を持つタイプ</h3>
+      <p class="detail-card-body">あなたは表の命式とは別に、内側にもう一つの感受ラインを持っています。直感と論理、感情と理性が交差しやすく、周囲とは少し異なる角度で物事を受け取ることがあります。これは矛盾ではなく、多層的な感受性の表れです。</p>
+    </div>` : ''}
+  `;
+}
+
+function toggleDetail() {
+  const section = document.getElementById('detail-section');
+  const cards = document.getElementById('detail-cards');
+  const icon = document.getElementById('toggle-icon');
+  const isOpen = cards.classList.contains('visible');
+
+  if (isOpen) {
+    cards.classList.remove('visible');
+    section.classList.remove('visible');
+    icon.classList.remove('open');
+    document.getElementById('detail-toggle').querySelector('span').textContent = '詳しく見る';
+  } else {
+    section.classList.add('visible');
+    cards.classList.add('visible');
+    icon.classList.add('open');
+    document.getElementById('detail-toggle').querySelector('span').textContent = '閉じる';
+  }
+}
+
+function reset() {
+  document.getElementById('result-section').classList.remove('visible');
+  document.getElementById('result-section').classList.remove('fade-in');
+  document.getElementById('year').value = '';
+  document.getElementById('month').value = '';
+  document.getElementById('day').value = '';
+  document.getElementById('detail-cards').classList.remove('visible');
+  document.getElementById('detail-section').classList.remove('visible');
+  document.getElementById('toggle-icon').classList.remove('open');
+}
+
+// 今年をデフォルト表示
+document.getElementById('current-year').placeholder = new Date().getFullYear();
+
+// コピー用データ保持
+let _copyData = null;
+
+function copyResult() {
+  if (!_copyData) return;
+  const { title, no, kanshi, actionWord, cycleLabel, fortuneLabel, isResonance } = _copyData;
+  const url = location.href.split('?')[0];
+  const resonanceLine = isResonance ? '\n共鳴型' : '';
+  const text = `私の命軸は「${title}」でした。\n\n命式 No.${no}　${kanshi}\n${actionWord} / ${cycleLabel} / 今年：${fortuneLabel}${resonanceLine}\n\n▶ 命軸で自分を読む → ${url}`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.classList.add('copied');
+    btn.querySelector('span').textContent = 'コピーしました';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.querySelector('span').textContent = '結果をコピー';
+    }, 2000);
+  }).catch(() => {
+    // フォールバック
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('copy-btn');
+    btn.classList.add('copied');
+    btn.querySelector('span').textContent = 'コピーしました';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.querySelector('span').textContent = '結果をコピー';
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
