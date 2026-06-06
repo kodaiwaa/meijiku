@@ -39,6 +39,8 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  .is-hidden { display: none !important; }
+
   body {
     font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Georgia', serif;
     background: var(--paper);
@@ -697,7 +699,7 @@
     <p class="header-desc">生年月日から、あなたの本質・行動パターン・今年の流れを読みます。<br>干支と暦をベースにした、伝統と独自解釈の自己理解ツールです。</p>
   </div>
 
-  <div class="input-section">
+  <div class="input-section" id="main-input-section">
     <span class="input-label">生年月日を入力してください</span>
     <div class="date-row">
       <div class="date-field year">
@@ -724,7 +726,44 @@
     <button class="submit-btn" onclick="calculate()">命式を見る</button>
   </div>
 
-  <div class="divider"></div>
+  <div class="divider" id="input-divider"></div>
+
+  <div class="loading" id="loading">
+    <span class="loading-dots">算出中</span>
+  </div>
+
+  <div class="result-section" id="result-section">
+
+    <div class="meishiki-header">
+      <p class="meishiki-label">MEISHIKI</p>
+      <p class="meishiki-number" id="meishiki-number"></p>
+      <h2 class="meishiki-title" id="meishiki-title"></h2>
+      <div class="tags" id="tags"></div>
+    </div>
+
+    <p class="summary-text" id="summary"></p>
+
+    <button class="copy-btn" id="copy-btn" onclick="copyResult()">
+      <span>結果をコピー</span>
+    </button>
+
+    <button class="copy-btn" onclick="shareResult()">
+      <span>Xでシェア</span>
+    </button>
+
+    <button class="detail-toggle" id="detail-toggle" onclick="toggleDetail()">
+      <span>詳しく見る</span>
+      <span class="toggle-icon" id="toggle-icon">▼</span>
+    </button>
+
+    <div class="detail-section" id="detail-section">
+      <div class="detail-cards" id="detail-cards"></div>
+    </div>
+
+    <button class="reset-btn" onclick="reset()">はじめから</button>
+
+    <div class="debug" id="debug"></div>
+  </div>
 
   <div class="compat-section" id="compat-section">
     <h2 class="compat-title">相性診断</h2>
@@ -777,41 +816,6 @@
   </div>
 
   <div class="compat-result" id="compat-result"></div>
-
-  <div class="divider"></div>
-
-  <div class="loading" id="loading">
-    <span class="loading-dots">算出中</span>
-  </div>
-
-  <div class="result-section" id="result-section">
-
-    <div class="meishiki-header">
-      <p class="meishiki-label">MEISHIKI</p>
-      <p class="meishiki-number" id="meishiki-number"></p>
-      <h2 class="meishiki-title" id="meishiki-title"></h2>
-      <div class="tags" id="tags"></div>
-    </div>
-
-    <p class="summary-text" id="summary"></p>
-
-    <button class="copy-btn" id="copy-btn" onclick="copyResult()">
-      <span>結果をコピー</span>
-    </button>
-
-    <button class="detail-toggle" id="detail-toggle" onclick="toggleDetail()">
-      <span>詳しく見る</span>
-      <span class="toggle-icon" id="toggle-icon">▼</span>
-    </button>
-
-    <div class="detail-section" id="detail-section">
-      <div class="detail-cards" id="detail-cards"></div>
-    </div>
-
-    <button class="reset-btn" onclick="reset()">はじめから</button>
-
-    <div class="debug" id="debug"></div>
-  </div>
 
   <div class="footer-note">
     <p>この診断は、伝統暦・干支・十二運をベースにした娯楽・自己理解コンテンツです。結果は参考としてお楽しみください。</p>
@@ -1157,6 +1161,8 @@ function calculate() {
     document.getElementById('result-section').classList.add('visible');
     document.getElementById('result-section').classList.add('fade-in');
     document.getElementById('compat-section').classList.add('visible');
+    collapseMainInput();
+    document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 600);
 }
 
@@ -1545,6 +1551,8 @@ function reset() {
   document.getElementById('compat-section').classList.remove('visible');
   document.getElementById('compat-form').classList.remove('visible');
   document.getElementById('compat-result').classList.remove('visible');
+  document.getElementById('main-input-section').classList.remove('is-hidden');
+  document.getElementById('input-divider').classList.remove('is-hidden');
   document.getElementById('year').value = '';
   document.getElementById('month').value = '';
   document.getElementById('day').value = '';
@@ -1552,6 +1560,11 @@ function reset() {
   document.getElementById('detail-section').classList.remove('visible');
   document.getElementById('toggle-icon').classList.remove('open');
   document.getElementById('compat-toggle-icon').classList.remove('open');
+}
+
+function collapseMainInput() {
+  document.getElementById('main-input-section').classList.add('is-hidden');
+  document.getElementById('input-divider').classList.add('is-hidden');
 }
 
 // 今年をデフォルト表示
@@ -1624,6 +1637,13 @@ function buildResultShareText() {
   return `私の命軸は「${title}」でした。\n\n命式 No.${no}　${kanshi}\n${actionWord} / ${cycleLabel} / 今年：${fortuneLabel}${resonanceLine}\n\n今月の一言：\n${monthly}\n\n▶ 命軸で自分を読む → ${url}\n\n#命軸 #三軸命式占い`;
 }
 
+function shareResult() {
+  if (!_copyData) return;
+  const text = buildResultShareText();
+  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+  window.open(shareUrl, '_blank', 'noopener,noreferrer');
+}
+
 function applyUrlParams() {
   const params = new URLSearchParams(location.search);
   const ay = parseInt(params.get('ay'));
@@ -1634,6 +1654,7 @@ function applyUrlParams() {
   const bd = parseInt(params.get('bd'));
 
   if (isValidDateInput(ay, am, ad) && isValidDateInput(by, bm, bd)) {
+    collapseMainInput();
     document.getElementById('compat-section').classList.add('visible');
     document.getElementById('compat-form').classList.add('visible');
     document.getElementById('compat-toggle-icon').classList.add('open');
