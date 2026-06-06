@@ -1168,6 +1168,7 @@ function renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYea
     actionWord: reading.action.modifier_word,
     cycleLabel: cycleData.display + polarityLabel,
     fortuneLabel: fortuneData.display_label,
+    monthly: reading.action.monthly,
     isResonance: reading.isResonance,
   };
 
@@ -1518,10 +1519,7 @@ let _copyData = null;
 
 function copyResult() {
   if (!_copyData) return;
-  const { title, no, kanshi, actionWord, cycleLabel, fortuneLabel, isResonance } = _copyData;
-  const url = location.href.split('?')[0];
-  const resonanceLine = isResonance ? '\n共鳴型' : '';
-  const text = `私の命軸は「${title}」でした。\n\n命式 No.${no}　${kanshi}\n${actionWord} / ${cycleLabel} / 今年：${fortuneLabel}${resonanceLine}\n\n▶ 命軸で自分を読む → ${url}`;
+  const text = buildResultShareText();
 
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copy-btn');
@@ -1551,11 +1549,19 @@ function copyResult() {
   });
 }
 
+function buildResultShareText() {
+  if (!_copyData) return '';
+  const { title, no, kanshi, actionWord, cycleLabel, fortuneLabel, monthly, isResonance } = _copyData;
+  const url = location.href.split('?')[0];
+  const resonanceLine = isResonance ? '\n共鳴型' : '';
+  return `私の命軸は「${title}」でした。\n\n命式 No.${no}　${kanshi}\n${actionWord} / ${cycleLabel} / 今年：${fortuneLabel}${resonanceLine}\n\n今月の一言：\n${monthly}\n\n▶ 命軸で自分を読む → ${url}\n\n#命軸 #三軸命式占い`;
+}
+
 function buildCompatibilityShareText() {
   if (!_compatData) return '';
   const { personA, personB, compatibility } = _compatData;
   const url = location.href.split('?')[0];
-  return `命軸の相性診断は ${compatibility.total}/100 でした。\n\nあなた：${personA.reading.title}（${personA.dp.kanshi}・${personA.reading.action.modifier_word}）\n相手：${personB.reading.title}（${personB.dp.kanshi}・${personB.reading.action.modifier_word}）\n\n${compatibility.band}\n\n▶ 命軸で相性を見る → ${url}`;
+  return `命軸の相性診断は ${compatibility.total}/100 でした。\n\nあなた：${personA.reading.title}（${personA.dp.kanshi}・${personA.reading.action.modifier_word}）\n相手：${personB.reading.title}（${personB.dp.kanshi}・${personB.reading.action.modifier_word}）\n\n${compatibility.band}\n\n▶ 命軸で相性を見る → ${url}\n\n#命軸 #相性診断`;
 }
 
 function copyCompatibility() {
