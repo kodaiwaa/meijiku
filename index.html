@@ -174,8 +174,21 @@
   .submit-btn:active { transform: scale(0.98); }
 
   .compat-section {
+    display: none;
     padding: 1.5rem;
     background: var(--paper);
+  }
+
+  .compat-section.visible { display: block; }
+
+  .compat-form {
+    display: none;
+  }
+
+  .compat-form.visible { display: block; }
+
+  .compat-toggle {
+    margin-top: 0;
   }
 
   .compat-title {
@@ -713,47 +726,54 @@
 
   <div class="divider"></div>
 
-  <div class="compat-section">
+  <div class="compat-section" id="compat-section">
     <h2 class="compat-title">相性診断</h2>
     <p class="compat-desc">2人の生年月日から、命式・行動スタイル・周期タイプの重なりを読みます。</p>
 
-    <div class="compat-person">
-      <span class="compat-person-label">あなた</span>
-      <div class="date-row">
-        <div class="date-field year">
-          <span class="date-field-label">年</span>
-          <input type="number" id="compat-a-year" placeholder="1990" min="1900" max="2025">
-        </div>
-        <div class="date-field month">
-          <span class="date-field-label">月</span>
-          <input type="number" id="compat-a-month" placeholder="4" min="1" max="12">
-        </div>
-        <div class="date-field day">
-          <span class="date-field-label">日</span>
-          <input type="number" id="compat-a-day" placeholder="15" min="1" max="31">
+    <button class="detail-toggle compat-toggle" id="compat-toggle" onclick="toggleCompatibilityForm()">
+      <span>相性を診断する</span>
+      <span class="toggle-icon" id="compat-toggle-icon">▼</span>
+    </button>
+
+    <div class="compat-form" id="compat-form">
+      <div class="compat-person">
+        <span class="compat-person-label">あなた</span>
+        <div class="date-row">
+          <div class="date-field year">
+            <span class="date-field-label">年</span>
+            <input type="number" id="compat-a-year" placeholder="1990" min="1900" max="2025">
+          </div>
+          <div class="date-field month">
+            <span class="date-field-label">月</span>
+            <input type="number" id="compat-a-month" placeholder="4" min="1" max="12">
+          </div>
+          <div class="date-field day">
+            <span class="date-field-label">日</span>
+            <input type="number" id="compat-a-day" placeholder="15" min="1" max="31">
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="compat-person">
-      <span class="compat-person-label">相手</span>
-      <div class="date-row">
-        <div class="date-field year">
-          <span class="date-field-label">年</span>
-          <input type="number" id="compat-b-year" placeholder="1995" min="1900" max="2025">
-        </div>
-        <div class="date-field month">
-          <span class="date-field-label">月</span>
-          <input type="number" id="compat-b-month" placeholder="8" min="1" max="12">
-        </div>
-        <div class="date-field day">
-          <span class="date-field-label">日</span>
-          <input type="number" id="compat-b-day" placeholder="20" min="1" max="31">
+      <div class="compat-person">
+        <span class="compat-person-label">相手</span>
+        <div class="date-row">
+          <div class="date-field year">
+            <span class="date-field-label">年</span>
+            <input type="number" id="compat-b-year" placeholder="1995" min="1900" max="2025">
+          </div>
+          <div class="date-field month">
+            <span class="date-field-label">月</span>
+            <input type="number" id="compat-b-month" placeholder="8" min="1" max="12">
+          </div>
+          <div class="date-field day">
+            <span class="date-field-label">日</span>
+            <input type="number" id="compat-b-day" placeholder="20" min="1" max="31">
+          </div>
         </div>
       </div>
-    </div>
 
-    <button class="submit-btn" onclick="calculateCompatibility()">相性を見る</button>
+      <button class="submit-btn" onclick="calculateCompatibility()">相性を診断する</button>
+    </div>
   </div>
 
   <div class="compat-result" id="compat-result"></div>
@@ -1136,6 +1156,7 @@ function calculate() {
     document.getElementById('loading').classList.remove('visible');
     document.getElementById('result-section').classList.add('visible');
     document.getElementById('result-section').classList.add('fade-in');
+    document.getElementById('compat-section').classList.add('visible');
   }, 600);
 }
 
@@ -1481,6 +1502,20 @@ function renderCompatibility(personA, personB, compatibility) {
   result.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function toggleCompatibilityForm() {
+  const form = document.getElementById('compat-form');
+  const icon = document.getElementById('compat-toggle-icon');
+  const isOpen = form.classList.contains('visible');
+
+  if (isOpen) {
+    form.classList.remove('visible');
+    icon.classList.remove('open');
+  } else {
+    form.classList.add('visible');
+    icon.classList.add('open');
+  }
+}
+
 function toggleDetail() {
   const section = document.getElementById('detail-section');
   const cards = document.getElementById('detail-cards');
@@ -1503,12 +1538,16 @@ function toggleDetail() {
 function reset() {
   document.getElementById('result-section').classList.remove('visible');
   document.getElementById('result-section').classList.remove('fade-in');
+  document.getElementById('compat-section').classList.remove('visible');
+  document.getElementById('compat-form').classList.remove('visible');
+  document.getElementById('compat-result').classList.remove('visible');
   document.getElementById('year').value = '';
   document.getElementById('month').value = '';
   document.getElementById('day').value = '';
   document.getElementById('detail-cards').classList.remove('visible');
   document.getElementById('detail-section').classList.remove('visible');
   document.getElementById('toggle-icon').classList.remove('open');
+  document.getElementById('compat-toggle-icon').classList.remove('open');
 }
 
 // 今年をデフォルト表示
