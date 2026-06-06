@@ -1152,7 +1152,7 @@ function calculate() {
     const actionStyle = calcActionStyle(dp.stem, dp.branch);
     const reading = generateReading(dp, actionStyle, cycleKey, polarityKey, stageKey, isResonance);
 
-    renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYear);
+    renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYear, { year, month, day });
     document.getElementById('loading').classList.remove('visible');
     document.getElementById('result-section').classList.add('visible');
     document.getElementById('result-section').classList.add('fade-in');
@@ -1160,7 +1160,7 @@ function calculate() {
   }, 600);
 }
 
-function renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYear) {
+function renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYear, birthDate) {
   const cycleData = PARTS.cycles[cycleKey];
   const fortuneData = PARTS.fortune_stages[stageKey];
 
@@ -1190,6 +1190,10 @@ function renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYea
     cycleLabel: cycleData.display + polarityLabel,
     fortuneLabel: fortuneData.display_label,
     monthly: reading.action.monthly,
+    birthYear: birthDate.year,
+    birthMonth: birthDate.month,
+    birthDay: birthDate.day,
+    targetYear: currentYear,
     isResonance: reading.isResonance,
   };
 
@@ -1556,6 +1560,17 @@ document.getElementById('current-year').placeholder = new Date().getFullYear();
 // コピー用データ保持
 let _copyData = null;
 
+function buildResultUrl() {
+  if (!_copyData) return location.href.split('?')[0];
+  const { birthYear, birthMonth, birthDay, targetYear } = _copyData;
+  const url = new URL(location.href.split('?')[0]);
+  url.searchParams.set('y', birthYear);
+  url.searchParams.set('m', birthMonth);
+  url.searchParams.set('d', birthDay);
+  url.searchParams.set('t', targetYear);
+  return url.toString();
+}
+
 function copyResult() {
   if (!_copyData) return;
   const text = buildResultShareText();
@@ -1591,10 +1606,31 @@ function copyResult() {
 function buildResultShareText() {
   if (!_copyData) return '';
   const { title, no, kanshi, actionWord, cycleLabel, fortuneLabel, monthly, isResonance } = _copyData;
-  const url = location.href.split('?')[0];
+  const url = buildResultUrl();
   const resonanceLine = isResonance ? '\n共鳴型' : '';
   return `私の命軸は「${title}」でした。\n\n命式 No.${no}　${kanshi}\n${actionWord} / ${cycleLabel} / 今年：${fortuneLabel}${resonanceLine}\n\n今月の一言：\n${monthly}\n\n▶ 命軸で自分を読む → ${url}\n\n#命軸 #三軸命式占い`;
 }
+
+function applyResultUrlParams() {
+  const params = new URLSearchParams(location.search);
+  const year = parseInt(params.get('y'));
+  const month = parseInt(params.get('m'));
+  const day = parseInt(params.get('d'));
+  const targetYear = parseInt(params.get('t'));
+
+  if (!isValidDateInput(year, month, day)) return;
+
+  document.getElementById('year').value = year;
+  document.getElementById('month').value = month;
+  document.getElementById('day').value = day;
+  if (targetYear >= 1900 && targetYear <= 2100) {
+    document.getElementById('current-year').value = targetYear;
+  }
+
+  setTimeout(() => calculate(), 300);
+}
+
+applyResultUrlParams();
 
 function buildCompatibilityShareText() {
   if (!_compatData) return '';
