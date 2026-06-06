@@ -173,6 +173,153 @@
   .submit-btn:hover { opacity: 0.88; }
   .submit-btn:active { transform: scale(0.98); }
 
+  .compat-section {
+    padding: 1.5rem;
+    background: var(--paper);
+  }
+
+  .compat-title {
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .compat-desc {
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    margin-bottom: 14px;
+  }
+
+  .compat-person {
+    margin-bottom: 14px;
+  }
+
+  .compat-person-label {
+    display: block;
+    font-size: 10px;
+    color: var(--accent);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.14em;
+    margin-bottom: 8px;
+  }
+
+  .compat-result {
+    display: none;
+    padding: 1.5rem;
+  }
+
+  .compat-result.visible { display: block; }
+
+  .compat-score-card {
+    background: var(--paper-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 12px;
+  }
+
+  .compat-score-label {
+    font-size: 10px;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.18em;
+    margin-bottom: 6px;
+  }
+
+  .compat-score {
+    font-size: 42px;
+    line-height: 1;
+    color: var(--accent);
+    font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+    margin-bottom: 8px;
+  }
+
+  .compat-score span {
+    font-size: 16px;
+    color: var(--ink-light);
+  }
+
+  .compat-score-title {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .compat-people {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .compat-person-card {
+    background: var(--paper-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+
+  .compat-person-name {
+    font-size: 11px;
+    color: var(--ink-light);
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.12em;
+    margin-bottom: 4px;
+  }
+
+  .compat-person-summary {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--ink-mid);
+  }
+
+  .compat-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .compat-bar-row {
+    display: grid;
+    grid-template-columns: 64px 1fr 44px;
+    gap: 8px;
+    align-items: center;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    font-size: 11px;
+    color: var(--ink-mid);
+  }
+
+  .compat-bar-track {
+    height: 7px;
+    border-radius: 999px;
+    background: var(--paper-warm);
+    overflow: hidden;
+  }
+
+  .compat-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--resonance);
+  }
+
+  .compat-comments {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .compat-comment-card {
+    background: var(--paper-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+  }
+
   /* 区切り */
   .divider {
     height: 0.5px;
@@ -566,6 +713,53 @@
 
   <div class="divider"></div>
 
+  <div class="compat-section">
+    <h2 class="compat-title">相性診断</h2>
+    <p class="compat-desc">2人の生年月日から、命式・行動スタイル・周期タイプの重なりを読みます。</p>
+
+    <div class="compat-person">
+      <span class="compat-person-label">あなた</span>
+      <div class="date-row">
+        <div class="date-field year">
+          <span class="date-field-label">年</span>
+          <input type="number" id="compat-a-year" placeholder="1990" min="1900" max="2025">
+        </div>
+        <div class="date-field month">
+          <span class="date-field-label">月</span>
+          <input type="number" id="compat-a-month" placeholder="4" min="1" max="12">
+        </div>
+        <div class="date-field day">
+          <span class="date-field-label">日</span>
+          <input type="number" id="compat-a-day" placeholder="15" min="1" max="31">
+        </div>
+      </div>
+    </div>
+
+    <div class="compat-person">
+      <span class="compat-person-label">相手</span>
+      <div class="date-row">
+        <div class="date-field year">
+          <span class="date-field-label">年</span>
+          <input type="number" id="compat-b-year" placeholder="1995" min="1900" max="2025">
+        </div>
+        <div class="date-field month">
+          <span class="date-field-label">月</span>
+          <input type="number" id="compat-b-month" placeholder="8" min="1" max="12">
+        </div>
+        <div class="date-field day">
+          <span class="date-field-label">日</span>
+          <input type="number" id="compat-b-day" placeholder="20" min="1" max="31">
+        </div>
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="calculateCompatibility()">相性を見る</button>
+  </div>
+
+  <div class="compat-result" id="compat-result"></div>
+
+  <div class="divider"></div>
+
   <div class="loading" id="loading">
     <span class="loading-dots">算出中</span>
   </div>
@@ -657,6 +851,28 @@ const CYCLE_STOP_BRANCH = {
 // 運気ステージ順（停止から逆順で12サイクル）
 const FORTUNE_STAGES = ['停止','減退','種子','緑生','立花','健弱','達成','乱気','再会','財成','安定','陰影'];
 const FORTUNE_KEYS   = ['pause','release','seed','sprout','bloom','fluctuate','harvest','turbulence','reunion','accumulate','flow','inner'];
+
+const ELEMENT_ORDER = ['wood', 'fire', 'earth', 'metal', 'water'];
+const CYCLE_ORDER = ['tree', 'flame', 'earth', 'metal', 'sea', 'sky'];
+const ELEMENT_LABELS = { wood:'木', fire:'火', earth:'土', metal:'金', water:'水' };
+const STEM_ELEMENTS = {
+  '甲':'wood', '乙':'wood', '丙':'fire', '丁':'fire', '戊':'earth',
+  '己':'earth', '庚':'metal', '辛':'metal', '壬':'water', '癸':'water',
+};
+const BRANCH_ELEMENTS = {
+  '子':'water', '丑':'earth', '寅':'wood', '卯':'wood', '辰':'earth', '巳':'fire',
+  '午':'fire', '未':'earth', '申':'metal', '酉':'metal', '戌':'earth', '亥':'water',
+};
+const ACTION_COMPLEMENTS = [
+  ['長生', '病'], ['沐浴', '冠帯'], ['建禄', '絶'],
+  ['帝旺', '衰'], ['死', '胎'], ['墓', '養'],
+];
+const ACTION_GROUPS = [
+  ['長生', '冠帯', '建禄'],
+  ['帝旺', '沐浴', '病'],
+  ['衰', '墓', '養'],
+  ['死', '絶', '胎'],
+];
 
 // ============================================================
 // 計算ロジック
@@ -1030,6 +1246,240 @@ function renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYea
   `;
 }
 
+function isValidDateInput(year, month, day) {
+  return year && month && day && year >= 1900 && year <= 2025 && month >= 1 && month <= 12 && day >= 1 && day <= 31;
+}
+
+function getPersonProfile(year, month, day) {
+  const dp = calcDayPillar(year, month, day);
+  const { cycleKey, polarityKey, polarityLabel, isResonance, voidStr } = calcCycle(dp.index, year, month, day);
+  const { stageKey } = calcFortuneStage({ cycleKey, polarityKey, voidStr }, new Date().getFullYear());
+  const actionStyle = calcActionStyle(dp.stem, dp.branch);
+  const reading = generateReading(dp, actionStyle, cycleKey, polarityKey, stageKey, isResonance);
+  const cycleData = PARTS.cycles[cycleKey];
+
+  return {
+    year, month, day, dp, actionStyle, reading,
+    cycleKey, cycleLabel: cycleData.display + polarityLabel,
+  };
+}
+
+function relationBetweenElements(a, b) {
+  if (a === b) return 'same';
+  const aIndex = ELEMENT_ORDER.indexOf(a);
+  const bIndex = ELEMENT_ORDER.indexOf(b);
+  if ((aIndex + 1) % ELEMENT_ORDER.length === bIndex || (bIndex + 1) % ELEMENT_ORDER.length === aIndex) {
+    return 'generate';
+  }
+  if ((aIndex + 2) % ELEMENT_ORDER.length === bIndex || (bIndex + 2) % ELEMENT_ORDER.length === aIndex) {
+    return 'control';
+  }
+  return 'other';
+}
+
+function scoreElementPair(a, b) {
+  const relation = relationBetweenElements(a, b);
+  const scores = { generate: 20, same: 15, control: 8, other: 12 };
+  return { relation, score: scores[relation] };
+}
+
+function isActionComplement(a, b) {
+  return ACTION_COMPLEMENTS.some(pair => pair.includes(a) && pair.includes(b));
+}
+
+function isActionNear(a, b) {
+  return ACTION_GROUPS.some(group => group.includes(a) && group.includes(b));
+}
+
+function scoreActionPair(a, b) {
+  if (isActionComplement(a, b)) return { relation: 'complement', score: a === b ? 24 : 30 };
+  if (isActionNear(a, b)) return { relation: 'near', score: a === b ? 24 : 22 };
+  const aIndex = JYUNITEN['甲'].indexOf(a);
+  const bIndex = JYUNITEN['甲'].indexOf(b);
+  const distance = Math.abs(aIndex - bIndex);
+  if (distance === 6) return { relation: 'tension', score: 16 };
+  return { relation: 'balance', score: 20 };
+}
+
+function scoreCyclePair(a, b) {
+  if (a === b) return { relation: 'same', score: 30 };
+  const aIndex = CYCLE_ORDER.indexOf(a);
+  const bIndex = CYCLE_ORDER.indexOf(b);
+  const distance = Math.abs(aIndex - bIndex);
+  const wrappedDistance = Math.min(distance, CYCLE_ORDER.length - distance);
+  if (wrappedDistance === 1) return { relation: 'generate', score: 25 };
+  if (wrappedDistance === 2) return { relation: 'stimulate', score: 20 };
+  return { relation: 'adjust', score: 16 };
+}
+
+function getScoreBand(score) {
+  if (score >= 85) return '深く共鳴しやすい組み合わせ';
+  if (score >= 70) return '補い合う力が自然に働く組み合わせ';
+  if (score >= 55) return '違いが刺激になる関係';
+  if (score >= 40) return '理解に時間がかかるが深まると強い関係';
+  return 'お互いの個性が際立つ関係';
+}
+
+function describeElementCompatibility(a, b, stemScore, branchScore) {
+  const stemA = ELEMENT_LABELS[STEM_ELEMENTS[a.dp.stem]];
+  const stemB = ELEMENT_LABELS[STEM_ELEMENTS[b.dp.stem]];
+  const branchA = ELEMENT_LABELS[BRANCH_ELEMENTS[a.dp.branch]];
+  const branchB = ELEMENT_LABELS[BRANCH_ELEMENTS[b.dp.branch]];
+  const relation = stemScore.score + branchScore.score;
+  if (relation >= 34) {
+    return `${stemA}と${stemB}、${branchA}と${branchB}が自然に流れを作る組み合わせです。考え方の違いも、関係を進める力になりやすいです。`;
+  }
+  if (relation >= 26) {
+    return `${stemA}と${stemB}、${branchA}と${branchB}がほどよく重なります。似ている部分と違う部分の両方があり、会話の中で理解が深まります。`;
+  }
+  return `${stemA}と${stemB}、${branchA}と${branchB}の個性がはっきり出る組み合わせです。違いを正そうとせず、役割の違いとして見るほど関係が育ちます。`;
+}
+
+function describeActionCompatibility(a, b, actionScore) {
+  const aWord = a.reading.action.modifier_word;
+  const bWord = b.reading.action.modifier_word;
+  if (actionScore.relation === 'complement') {
+    return `${aWord}と${bWord}は補完関係です。一方が足場を作り、もう一方が流れを動かすように、役割が自然に分かれやすいです。`;
+  }
+  if (actionScore.relation === 'near') {
+    return `${aWord}と${bWord}は近いテンポを持ちます。安心感が生まれやすいぶん、停滞した時はどちらかが小さく動くと流れが戻ります。`;
+  }
+  if (actionScore.relation === 'tension') {
+    return `${aWord}と${bWord}は動き出すタイミングに差が出やすい関係です。急がせず、止めすぎず、相手の速度を尊重すると強みになります。`;
+  }
+  return `${aWord}と${bWord}は違いを活かせる関係です。得意な場面が分かれるため、任せるところを決めると噛み合いやすくなります。`;
+}
+
+function describeCycleCompatibility(a, b, cycleScore) {
+  if (cycleScore.relation === 'same') {
+    return `同じ${PARTS.cycles[a.cycleKey].display}タイプです。根本的な価値観が近く、長期的に安定しやすい組み合わせです。`;
+  }
+  if (cycleScore.relation === 'generate') {
+    return `${PARTS.cycles[a.cycleKey].display}と${PARTS.cycles[b.cycleKey].display}が流れを生みます。片方の動きが、もう片方の力を引き出しやすい関係です。`;
+  }
+  if (cycleScore.relation === 'stimulate') {
+    return `${PARTS.cycles[a.cycleKey].display}と${PARTS.cycles[b.cycleKey].display}が刺激し合います。違いがあるからこそ、新しい視点や行動が生まれやすいです。`;
+  }
+  return `${PARTS.cycles[a.cycleKey].display}と${PARTS.cycles[b.cycleKey].display}は調整しながら深まる関係です。距離感を整えるほど、無理なく続きます。`;
+}
+
+function calculateCompatibilityScore(a, b) {
+  const stemScore = scoreElementPair(STEM_ELEMENTS[a.dp.stem], STEM_ELEMENTS[b.dp.stem]);
+  const branchScore = scoreElementPair(BRANCH_ELEMENTS[a.dp.branch], BRANCH_ELEMENTS[b.dp.branch]);
+  const meishikiScore = stemScore.score + branchScore.score;
+  const actionScore = scoreActionPair(a.actionStyle, b.actionStyle);
+  const cycleScore = scoreCyclePair(a.cycleKey, b.cycleKey);
+  const total = meishikiScore + actionScore.score + cycleScore.score;
+
+  return {
+    total,
+    band: getScoreBand(total),
+    meishiki: {
+      score: meishikiScore,
+      max: 40,
+      comment: describeElementCompatibility(a, b, stemScore, branchScore),
+    },
+    action: {
+      score: actionScore.score,
+      max: 30,
+      comment: describeActionCompatibility(a, b, actionScore),
+    },
+    cycle: {
+      score: cycleScore.score,
+      max: 30,
+      comment: describeCycleCompatibility(a, b, cycleScore),
+    },
+  };
+}
+
+let _compatData = null;
+
+function calculateCompatibility() {
+  const ay = parseInt(document.getElementById('compat-a-year').value);
+  const am = parseInt(document.getElementById('compat-a-month').value);
+  const ad = parseInt(document.getElementById('compat-a-day').value);
+  const by = parseInt(document.getElementById('compat-b-year').value);
+  const bm = parseInt(document.getElementById('compat-b-month').value);
+  const bd = parseInt(document.getElementById('compat-b-day').value);
+
+  if (!isValidDateInput(ay, am, ad) || !isValidDateInput(by, bm, bd)) {
+    alert('2人分の生年月日を正しく入力してください。');
+    return;
+  }
+
+  const personA = getPersonProfile(ay, am, ad);
+  const personB = getPersonProfile(by, bm, bd);
+  const compatibility = calculateCompatibilityScore(personA, personB);
+  renderCompatibility(personA, personB, compatibility);
+}
+
+function renderCompatibility(personA, personB, compatibility) {
+  const result = document.getElementById('compat-result');
+  const bars = [
+    ['命式', compatibility.meishiki.score, compatibility.meishiki.max],
+    ['行動', compatibility.action.score, compatibility.action.max],
+    ['周期', compatibility.cycle.score, compatibility.cycle.max],
+  ];
+
+  _compatData = { personA, personB, compatibility };
+
+  result.innerHTML = `
+    <div class="compat-score-card">
+      <p class="compat-score-label">COMPATIBILITY SCORE</p>
+      <div class="compat-score">${compatibility.total}<span> / 100</span></div>
+      <p class="compat-score-title">${compatibility.band}</p>
+    </div>
+
+    <div class="compat-people">
+      <div class="compat-person-card">
+        <p class="compat-person-name">あなた</p>
+        <p class="compat-person-summary">${personA.reading.title}（${personA.dp.kanshi}・${personA.reading.action.modifier_word}・${personA.cycleLabel}）</p>
+      </div>
+      <div class="compat-person-card">
+        <p class="compat-person-name">相手</p>
+        <p class="compat-person-summary">${personB.reading.title}（${personB.dp.kanshi}・${personB.reading.action.modifier_word}・${personB.cycleLabel}）</p>
+      </div>
+    </div>
+
+    <div class="compat-score-card">
+      <div class="compat-breakdown">
+        ${bars.map(([label, score, max]) => `
+          <div class="compat-bar-row">
+            <span>${label}</span>
+            <div class="compat-bar-track"><div class="compat-bar-fill" style="width:${Math.round(score / max * 100)}%"></div></div>
+            <span>${score}/${max}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="compat-comments">
+      <div class="compat-comment-card">
+        <p class="detail-card-label">命式の相性</p>
+        <p class="detail-card-body">${compatibility.meishiki.comment}</p>
+      </div>
+      <div class="compat-comment-card">
+        <p class="detail-card-label">行動の相性</p>
+        <p class="detail-card-body">${compatibility.action.comment}</p>
+      </div>
+      <div class="compat-comment-card">
+        <p class="detail-card-label">周期の相性</p>
+        <p class="detail-card-body">${compatibility.cycle.comment}</p>
+      </div>
+    </div>
+
+    <button class="copy-btn" id="compat-copy-btn" onclick="copyCompatibility()">
+      <span>相性をコピー</span>
+    </button>
+    <button class="copy-btn" onclick="shareCompatibility()">
+      <span>Xでシェア</span>
+    </button>
+  `;
+
+  result.classList.add('visible');
+  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function toggleDetail() {
   const section = document.getElementById('detail-section');
   const cards = document.getElementById('detail-cards');
@@ -1099,6 +1549,46 @@ function copyResult() {
       btn.querySelector('span').textContent = '結果をコピー';
     }, 2000);
   });
+}
+
+function buildCompatibilityShareText() {
+  if (!_compatData) return '';
+  const { personA, personB, compatibility } = _compatData;
+  const url = location.href.split('?')[0];
+  return `命軸の相性診断は ${compatibility.total}/100 でした。\n\nあなた：${personA.reading.title}（${personA.dp.kanshi}・${personA.reading.action.modifier_word}）\n相手：${personB.reading.title}（${personB.dp.kanshi}・${personB.reading.action.modifier_word}）\n\n${compatibility.band}\n\n▶ 命軸で相性を見る → ${url}`;
+}
+
+function copyCompatibility() {
+  if (!_compatData) return;
+  const text = buildCompatibilityShareText();
+  const btn = document.getElementById('compat-copy-btn');
+  const setCopied = () => {
+    btn.classList.add('copied');
+    btn.querySelector('span').textContent = 'コピーしました';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.querySelector('span').textContent = '相性をコピー';
+    }, 2000);
+  };
+
+  navigator.clipboard.writeText(text).then(setCopied).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    setCopied();
+  });
+}
+
+function shareCompatibility() {
+  if (!_compatData) return;
+  const text = buildCompatibilityShareText();
+  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+  window.open(shareUrl, '_blank', 'noopener,noreferrer');
 }
 </script>
 </body>
