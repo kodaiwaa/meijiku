@@ -668,6 +668,22 @@
   .copy-btn:hover { background: var(--paper-warm); }
   .copy-btn.copied { color: var(--resonance); border-color: var(--resonance); }
 
+  .next-year-btn {
+    width: 100%;
+    min-height: 40px;
+    background: var(--paper-card);
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-size: 12px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.08em;
+    margin-top: 12px;
+    cursor: pointer;
+  }
+
+  .next-year-btn:hover { background: var(--accent-pale); }
+
   .footer-note {
     padding: 1.5rem;
     border-top: 0.5px solid var(--border);
@@ -1273,6 +1289,7 @@ function renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYea
       <p class="detail-card-body">${fortuneData.meaning}</p>
       <div class="advice-box"><span class="advice-label">今年の助言</span>${fortuneData.advice}</div>
       <div class="advice-box monthly-advice"><span class="advice-label">今月の一言</span>${reading.action.monthly}</div>
+      <button class="next-year-btn" onclick="checkNextYear()">来年（${currentYear + 1}年）の流れも見る →</button>
     </div>
 
     ${reading.isResonance ? `
@@ -1554,6 +1571,13 @@ function toggleCompatibilityForm() {
     form.classList.add('visible');
     icon.classList.add('open');
   }
+}
+
+function checkNextYear() {
+  const currentYearInput = document.getElementById('current-year');
+  const currentYear = parseInt(currentYearInput.value) || new Date().getFullYear();
+  currentYearInput.value = currentYear + 1;
+  calculate();
 }
 
 function toggleDetail() {
