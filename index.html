@@ -335,6 +335,12 @@
     padding: 1rem 1.25rem;
   }
 
+  .compat-tip-card {
+    background: var(--accent-pale);
+    border-left: 2px solid var(--accent-light);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+
   /* 区切り */
   .divider {
     height: 0.5px;
@@ -1395,6 +1401,25 @@ function describeCycleCompatibility(a, b, cycleScore) {
   return `${PARTS.cycles[a.cycleKey].display}と${PARTS.cycles[b.cycleKey].display}は調整しながら深まる関係です。距離感を整えるほど、無理なく続きます。`;
 }
 
+function relationTip(actionScore, cycleScore) {
+  if (actionScore.relation === 'complement') {
+    return '役割を自然に分けると噛み合いやすいです。得意なことを任せ合うほど、関係が軽くなります。';
+  }
+  if (actionScore.relation === 'near' && cycleScore.relation === 'same') {
+    return '似ている安心感を大切にしながら、時々あえて違う選択を入れると関係が停滞しにくくなります。';
+  }
+  if (actionScore.relation === 'tension') {
+    return '相手のペースを変えようとするより、待つ場面と進める場面を分けると衝突が減ります。';
+  }
+  if (cycleScore.relation === 'stimulate') {
+    return '違いを正すより、刺激として受け取ると新しい視点が生まれやすい関係です。';
+  }
+  if (cycleScore.relation === 'adjust') {
+    return '距離感をこまめに整えるほど、無理なく長く続きやすい組み合わせです。';
+  }
+  return '言葉にする前提を増やすほど、お互いの強みが自然に伝わりやすくなります。';
+}
+
 function calculateCompatibilityScore(a, b) {
   const stemScore = scoreElementPair(STEM_ELEMENTS[a.dp.stem], STEM_ELEMENTS[b.dp.stem]);
   const branchScore = scoreElementPair(BRANCH_ELEMENTS[a.dp.branch], BRANCH_ELEMENTS[b.dp.branch]);
@@ -1421,6 +1446,7 @@ function calculateCompatibilityScore(a, b) {
       max: 30,
       comment: describeCycleCompatibility(a, b, cycleScore),
     },
+    tip: relationTip(actionScore, cycleScore),
   };
 }
 
@@ -1497,6 +1523,10 @@ function renderCompatibility(personA, personB, compatibility) {
       <div class="compat-comment-card">
         <p class="detail-card-label">周期の相性</p>
         <p class="detail-card-body">${compatibility.cycle.comment}</p>
+      </div>
+      <div class="compat-comment-card compat-tip-card">
+        <p class="detail-card-label">関係をよくする一言</p>
+        <p class="detail-card-body">${compatibility.tip}</p>
       </div>
     </div>
 
