@@ -385,6 +385,20 @@
     color: var(--ink-mid);
   }
 
+  .monthly-advice {
+    border-color: var(--resonance);
+    background: var(--resonance-pale);
+  }
+
+  .advice-label {
+    display: block;
+    margin-bottom: 4px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--ink-light);
+  }
+
   .resonance-card {
     border-color: var(--resonance);
   }
@@ -782,6 +796,20 @@ const PARTS = {
     '胎':  { modifier_word:'潜在型', action_tendency:'まだ形になっていない可能性を内包しています。時期が来ると一気に開花しやすいです。', decision_style:'直感で動くことが多いです。', interpersonal:'純粋な好奇心で人に近づきます。', energy_curve:'潜在・準備中' },
     '養':  { modifier_word:'受容型', action_tendency:'環境や人から吸収しながら育ちます。学びと成長への意欲が自然と行動を動かします。', decision_style:'周囲の意見を参考にしながら決めます。', interpersonal:'素直さと柔軟さで人に好かれやすいです。', energy_curve:'吸収・緩やかな成長' },
   },
+  action_style_monthly: {
+    '長生': '急いで広げるより、ひとつの習慣を丁寧に育てると流れが整います。',
+    '沐浴': '迷いを止めようとしなくて大丈夫。動きながら答えを見つけるのがあなたのやり方です。',
+    '冠帯': '段取りに時間をかけた分、本番では迷わず動けます。今月は準備を信じてください。',
+    '建禄': '地道に積んできたことが、今月少しずつ形になり始めます。焦らず続けてください。',
+    '帝旺': 'エネルギーが高い今月、動くなら今です。ただし休む判断も全力でしてください。',
+    '衰': '外に動くより、内側を整えることに価値がある月です。立ち止まることを恐れないで。',
+    '病': '今月は感じたことを信じてください。データより直感が当たりやすい時期です。',
+    '死': '手放すことで次が開く月です。続けることより、区切りをつける勇気が力になります。',
+    '墓': '表に出なくても、内側にエネルギーが溜まっています。今月は深める月と決めてください。',
+    '絶': 'ゼロから始めることを恐れないで。今月のリセットは、次の跳躍の準備です。',
+    '胎': 'まだ形にならなくていいです。今月は感じて、受け取って、蓄えることに集中してください。',
+    '養': '人から学ぶことが多い月です。素直に吸収すると、自分の中で何かが変わります。',
+  },
   cycles: {
     tree:  { display:'樹',   essence:'時間をかけて深く根を張り、着実に高みへ伸びる力', yang:{ expression:'外に向かって枝を広げるように、人や環境を巻き込みながら成長します。', tendency:'積極的・拡張志向' }, yin:{ expression:'内側に向かって根を深めるように、静かな持久力で場を支えます。', tendency:'内省的・深化志向' } },
     flame: { display:'炎',   essence:'熱量と表現力で周囲を動かす、明るく強いエネルギー', yang:{ expression:'大きく燃え上がるように、場の空気を変えるエネルギーを持ちます。', tendency:'発信・行動・場の中心' }, yin:{ expression:'消えない灯火のように、静かな熱を長く保ちます。', tendency:'持続・内向きの情熱' } },
@@ -834,6 +862,7 @@ function generateReading(dayPillar, actionStyle, cycleKey, polarityKey, fortuneK
   const stemData = PARTS.stems[stem];
   const branchData = PARTS.branches[branch];
   const actionData = PARTS.action_styles[actionStyle];
+  const actionMonthly = PARTS.action_style_monthly[actionStyle];
   const cycleData = PARTS.cycles[cycleKey];
   const fortuneData = PARTS.fortune_stages[fortuneKey];
 
@@ -854,7 +883,7 @@ function generateReading(dayPillar, actionStyle, cycleKey, polarityKey, fortuneK
     title,
     summary,
     essence: { trait: essenceTrait, strength: essenceStrength, shadow: essenceShadow, keywords: essenceKeywords },
-    action: actionData,
+    action: { ...actionData, monthly: actionMonthly },
     cycle: { ...cycleData, polarityKey },
     fortune: fortuneData,
     isResonance,
@@ -988,7 +1017,8 @@ function renderResult(dp, reading, cycleKey, polarityLabel, stageKey, currentYea
       <p class="detail-card-label">YEAR FORTUNE ／ ${currentYear}年の流れ</p>
       <h3 class="detail-card-title">${fortuneData.display_label}</h3>
       <p class="detail-card-body">${fortuneData.meaning}</p>
-      <div class="advice-box">${fortuneData.advice}</div>
+      <div class="advice-box"><span class="advice-label">今年の助言</span>${fortuneData.advice}</div>
+      <div class="advice-box monthly-advice"><span class="advice-label">今月の一言</span>${reading.action.monthly}</div>
     </div>
 
     ${reading.isResonance ? `
