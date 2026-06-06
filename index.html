@@ -1571,6 +1571,19 @@ function buildResultUrl() {
   return url.toString();
 }
 
+function buildCompatibilityUrl() {
+  if (!_compatData) return location.href.split('?')[0];
+  const { personA, personB } = _compatData;
+  const url = new URL(location.href.split('?')[0]);
+  url.searchParams.set('ay', personA.year);
+  url.searchParams.set('am', personA.month);
+  url.searchParams.set('ad', personA.day);
+  url.searchParams.set('by', personB.year);
+  url.searchParams.set('bm', personB.month);
+  url.searchParams.set('bd', personB.day);
+  return url.toString();
+}
+
 function copyResult() {
   if (!_copyData) return;
   const text = buildResultShareText();
@@ -1611,8 +1624,29 @@ function buildResultShareText() {
   return `私の命軸は「${title}」でした。\n\n命式 No.${no}　${kanshi}\n${actionWord} / ${cycleLabel} / 今年：${fortuneLabel}${resonanceLine}\n\n今月の一言：\n${monthly}\n\n▶ 命軸で自分を読む → ${url}\n\n#命軸 #三軸命式占い`;
 }
 
-function applyResultUrlParams() {
+function applyUrlParams() {
   const params = new URLSearchParams(location.search);
+  const ay = parseInt(params.get('ay'));
+  const am = parseInt(params.get('am'));
+  const ad = parseInt(params.get('ad'));
+  const by = parseInt(params.get('by'));
+  const bm = parseInt(params.get('bm'));
+  const bd = parseInt(params.get('bd'));
+
+  if (isValidDateInput(ay, am, ad) && isValidDateInput(by, bm, bd)) {
+    document.getElementById('compat-section').classList.add('visible');
+    document.getElementById('compat-form').classList.add('visible');
+    document.getElementById('compat-toggle-icon').classList.add('open');
+    document.getElementById('compat-a-year').value = ay;
+    document.getElementById('compat-a-month').value = am;
+    document.getElementById('compat-a-day').value = ad;
+    document.getElementById('compat-b-year').value = by;
+    document.getElementById('compat-b-month').value = bm;
+    document.getElementById('compat-b-day').value = bd;
+    setTimeout(() => calculateCompatibility(), 300);
+    return;
+  }
+
   const year = parseInt(params.get('y'));
   const month = parseInt(params.get('m'));
   const day = parseInt(params.get('d'));
@@ -1630,12 +1664,12 @@ function applyResultUrlParams() {
   setTimeout(() => calculate(), 300);
 }
 
-applyResultUrlParams();
+applyUrlParams();
 
 function buildCompatibilityShareText() {
   if (!_compatData) return '';
   const { personA, personB, compatibility } = _compatData;
-  const url = location.href.split('?')[0];
+  const url = buildCompatibilityUrl();
   return `命軸の相性診断は ${compatibility.total}/100 でした。\n\nあなた：${personA.reading.title}（${personA.dp.kanshi}・${personA.reading.action.modifier_word}）\n相手：${personB.reading.title}（${personB.dp.kanshi}・${personB.reading.action.modifier_word}）\n\n${compatibility.band}\n\n▶ 命軸で相性を見る → ${url}\n\n#命軸 #相性診断`;
 }
 
