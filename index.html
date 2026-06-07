@@ -697,6 +697,26 @@
     font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
     letter-spacing: 0.05em;
   }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    color: var(--ink-light);
+    font-size: 10px;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+  }
+
+  .footer-links a:hover { color: var(--accent); }
+
+  .debug {
     display: none;
     background: var(--paper-warm);
     border: 0.5px solid var(--border);
@@ -841,6 +861,10 @@
 
   <div class="footer-note">
     <p>この診断は、伝統暦・干支・十二運をベースにした娯楽・自己理解コンテンツです。結果は参考としてお楽しみください。</p>
+    <div class="footer-links">
+      <a href="./tokushoho.html">特定商取引法に基づく表記</a>
+      <a href="./privacy-policy.html">プライバシーポリシー</a>
+    </div>
   </div>
 
 </div>
