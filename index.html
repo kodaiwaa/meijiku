@@ -18,6 +18,14 @@
 <meta name="twitter:title" content="命軸｜三軸命式占い">
 <meta name="twitter:description" content="生年月日から、本質・行動スタイル・今年の流れを読む自己理解ツール">
 <meta name="twitter:image" content="https://kodaiwaa.github.io/meijiku/ogp.png">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PD162PJ9PV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-PD162PJ9PV');
+</script>
 <style>
   :root {
     --ink: #1a1814;
@@ -1618,6 +1626,11 @@ let _compatData = null;
 let _reportCheckoutData = null;
 const REPORT_API_BASE = 'https://meijiku-backend.vercel.app';
 
+function trackEvent(eventName, params = {}) {
+  if (typeof gtag !== 'function') return;
+  gtag('event', eventName, params);
+}
+
 function calculateCompatibility() {
   const ay = parseInt(document.getElementById('compat-a-year').value);
   const am = parseInt(document.getElementById('compat-a-month').value);
@@ -1787,6 +1800,12 @@ async function startPaidReportCheckout() {
     errorEl.classList.add('visible');
     return;
   }
+
+  trackEvent('paid_report_checkout_click', {
+    meishiki_number: _reportCheckoutData.reportInput.meishikiNumber,
+    action_style: _reportCheckoutData.reportInput.actionStyle,
+    cycle_stage: _reportCheckoutData.reportInput.cycleStage,
+  });
 
   btn.disabled = true;
   btn.textContent = '決済ページを準備中';
